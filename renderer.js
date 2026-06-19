@@ -1,7 +1,4 @@
 window.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('message').innerText =
-        `This app is using Chrome (v${versions.chrome()}), Node.js (v${versions.node()}), and Electron (v${versions.electron()})`;
-
     document.getElementById('loginBtn').addEventListener('click', login);
 });
 
