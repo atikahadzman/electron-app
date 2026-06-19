@@ -6,21 +6,24 @@
             http-equiv="Content-Security-Policy"
             content="default-src 'self'; script-src 'self'"
         />
-        <link rel="stylesheet" href="styles.css">
+        <link rel="stylesheet" href="login.css">
         <title>Hello from Electron renderer!</title>
     </head>
     <body>
         <div class="login-wrapper">
             <div class="login-card">
-                <p id="message"></p>
-
-                <div class="login-header">
+                <div class="login-card-header">
                     <h2>Sign in to your dashboard</h2>
                 </div>
+                <div class="login-card-body">
+                    <p id="message"></p>
+                    <div class="form-group">
+                        <input id="username" placeholder="Username" required/>
+                    </div>
 
-                <div class="login-body">
-                    <input id="username" placeholder="Username" required/>
-                    <input id="password" type="password" placeholder="Password" required/>
+                    <div class="form-group">
+                        <input id="password" type="password" placeholder="Password" required/>
+                    </div>
 
                     <button id="loginBtn" type="button" class="btn btn-primary">
                         Sign in
