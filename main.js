@@ -6,6 +6,13 @@ require('dotenv').config();
 app.disableHardwareAcceleration();
 app.commandLine.appendSwitch('disable-gpu');
 
+// make the app auto reload
+try {
+    require('electron-reload')(__dirname);
+} catch (err) {
+    console.error(err);
+}
+
 function createWindow() {
     const win = new BrowserWindow({
         width: 1000,
@@ -45,6 +52,29 @@ ipcMain.handle('login', async (_, username, password) => {
         return {
             success: false,
             message: error.response?.data?.message || error.message
+        };
+    }
+});
+
+ipcMain.handle('get-dashboard', async (_, token) => {
+    try {
+        const response = await axios.get(
+            process.env.API_URL + '/dashboard',
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }
+        );
+
+        return {
+            success: true,
+            data: response.data
+        };
+    } catch (error) {
+        return {
+            success: false,
+            message: error.message
         };
     }
 });

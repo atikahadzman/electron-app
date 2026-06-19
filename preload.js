@@ -7,5 +7,9 @@ contextBridge.exposeInMainWorld('versions', {
 });
 
 contextBridge.exposeInMainWorld('auth', {
-    login: (username, password) => ipcRenderer.invoke('login', username, password)
+    login: (username, password) =>
+        ipcRenderer.invoke('login', username, password),
+
+    getDashboard: (token) =>
+        ipcRenderer.invoke('get-dashboard', token)
 });

@@ -1,0 +1,109 @@
+.charts-grid,
+.table-grid {
+    width: 95%;
+    max-width: 1200px;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+.charts-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    align-items: flex-start;
+}
+
+.card {
+    border: 1px solid #e0e0e0;
+    width: 100%;
+}
+.card-header {
+    background-color: #f3eaea;
+    color: #000;
+    padding: 15px;
+}
+
+.charts-grid h2,
+.table-grid h2 {
+    width: 100%;
+    margin: 0 0 20px 0;
+}
+
+.col-md-4 {
+    flex: 1 1 450px;
+    max-width: 500px;
+    margin-bottom: 0;
+    padding: 25px;
+}
+
+/* responsive wrapper */
+.table {
+    table-layout: fixed;
+    width: 100%;
+}
+
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-top: 40px;
+}
+
+.table thead {
+    background-color: #f3eaea;
+    color: #000;
+    padding: 15px;
+}
+
+.table th,
+.table td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+/* hover effect */
+.table tbody tr:hover {
+    background: #f5f5f5;
+}
+
+.col-index {
+    width: 15%;
+    flex: 0 0 50px;
+}
+
+.col-name {
+    width: 15%;
+}
+
+.col-username {
+    width: 30%;
+}
+
+@media (max-width: 768px) {
+    .charts-grid {
+        padding: 15px;
+    }
+
+    .col-md-4 {
+        width: 100%;
+    }
+}
+
+/* Mobile (400px and below) */
+@media (max-width: 428px) {
+    .charts-grid {
+        width: 100%;
+    }
+
+    .charts-grid h2 {
+        font-size: 1.25rem;
+        margin-bottom: 15px;
+    }
+
+    .col-md-4 {
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 15px;
+    }
+}
