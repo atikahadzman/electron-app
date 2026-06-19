@@ -19,6 +19,7 @@
         "pouchdb": "^9.0.0"
     },
     "dependencies": {
+        "@fortawesome/fontawesome-free": "^7.2.0",
         "chart.js": "^4.5.1",
         "dotenv": "^17.4.2",
         "pouchdb-browser": "^9.0.0"
