@@ -1,6 +1,8 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('node:path');
 const axios = require('axios');
+const PouchDB = require('pouchdb');
+const db = new PouchDB('users');
 require('dotenv').config();
 
 app.disableHardwareAcceleration();
@@ -52,6 +54,74 @@ ipcMain.handle('login', async (_, username, password) => {
         return {
             success: false,
             message: error.response?.data?.message || error.message
+        };
+    }
+});
+
+ipcMain.handle('validate-local-login', async (_, username, password) => {
+    try {
+        const user = await db.get(username).catch(() => null);
+
+        if (user.password === password) {
+            return {
+                success: true,
+                offline: true,
+                user
+            };
+        }
+
+        return {
+            success: false,
+            message: 'Invalid password'
+        };
+
+    } catch (err) {
+        console.log('err: ' + JSON.stringify(err));
+        return {
+            success: false,
+            message: 'User not found locally'
+        };
+    }
+});
+
+// saving user
+ipcMain.handle('save-user', async (_, user) => {
+    try {
+        const existing = await db.get(user.username).catch(() => null);
+
+        if (existing) {
+            return {
+                success: true,
+                message: 'User already exists'
+            };
+        }
+
+        await db.put({
+            _id: user.username,
+            ...user
+        });
+
+        return { success: true };
+
+    } catch (err) {
+        return {
+            success: false,
+            message: err.message
+        };
+    }
+});
+
+ipcMain.handle('get-user', async (_, username) => {
+    try {
+        const user = await db.get(username);
+        return {
+            success: true,
+            user
+        };
+    } catch (err) {
+        return {
+            success: false,
+            message: err.message
         };
     }
 });

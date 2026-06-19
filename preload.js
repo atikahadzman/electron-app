@@ -11,5 +11,14 @@ contextBridge.exposeInMainWorld('auth', {
         ipcRenderer.invoke('login', username, password),
 
     getDashboard: (token) =>
-        ipcRenderer.invoke('get-dashboard', token)
+        ipcRenderer.invoke('get-dashboard', token),
+
+    saveUser: (user) =>
+        ipcRenderer.invoke('save-user', user),
+
+    getUser: (username) =>
+        ipcRenderer.invoke('get-user', username),
+    
+    validateLocalLogin: (username, password) =>
+        ipcRenderer.invoke('validate-local-login', username, password)
 });
