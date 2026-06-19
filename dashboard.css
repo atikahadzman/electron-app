@@ -18,7 +18,7 @@
     width: 100%;
 }
 .card-header {
-    background-color: #f3eaea;
+    background-color: #F7F7F7;
     color: #000;
     padding: 15px;
 }
@@ -50,7 +50,7 @@
 }
 
 .table thead {
-    background-color: #f3eaea;
+    background-color: #F7F7F7;
     color: #000;
     padding: 15px;
 }
