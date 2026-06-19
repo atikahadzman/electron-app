@@ -4,79 +4,97 @@ const ctx = document.getElementById('myChart');
 window.addEventListener('DOMContentLoaded', dashboard);
 
 async function dashboard() {
+    await loadNavbar();
+    handleLogout();
+
     const message = document.getElementById('message');
 
     try {
         const token = localStorage.getItem('token');
+
         if (!token) {
-            message.innerText = 'No token found';
-            message.style.color = 'red';
+            showError(message, 'No token found');
             return;
         }
 
         const result = await window.auth.getDashboard(token);
-        console.log(result);
-        console.log('Chart is:', window.Chart);
+
         if (result.success) {
-            const donutData = result.data.chartDonut;
-            const barData = result.data.chartBar;
-            const tableUsers = result.data.tableUsers;
-
-            // donut chart
-            const labelDonut = donutData.map(item => item.name);
-            const valueDonut = donutData.map(item => item.value);
-            new Chart(document.getElementById('donutChart'), {
-                type: 'doughnut',
-                data: {
-                    labels: labelDonut,
-                    datasets: [{
-                        data: valueDonut,
-                        backgroundColor: [
-                            '#4CAF50',
-                            '#F44336',
-                            '#FFC107',
-                            '#2196F3'
-                        ]
-                    }]
-                }
-            });
-
-            // bar chart
-            const labelBar = barData.map(item => item.name);
-            const valueBar = barData.map(item => item.value);
-            new Chart(document.getElementById('barChart'), {
-                type: 'bar',
-                data: {
-                    labels: labelBar,
-                    datasets: [{
-                        label: 'Users',
-                        data: valueBar,
-                        backgroundColor: '#2196F3'
-                    }]
-                }
-            });
-
-            // user table
-            const tbody = document.querySelector('#userTable tbody');
-            tbody.innerHTML = ''; // clear old rows
-            tableUsers.forEach(user => {
-                const row = document.createElement('tr');
-                let i = 1;
-                row.innerHTML = `
-                    <td>${i++}</td>
-                    <td>${user.firstName}</td>
-                    <td>${user.lastName}</td>
-                    <td>${user.username}</td>
-                `;
-                tbody.appendChild(row);
-            });
+            renderDonut(result.data.chartDonut);
+            renderBar(result.data.chartBar);
+            renderTable(result.data.tableUsers);
         } else {
-            message.innerText = result.message;
-            message.style.color = 'red';
+            showError(message, result.message);
         }
+
     } catch (err) {
-        message.innerText = 'Unexpected error occurred';
-        message.style.color = 'red';
-        console.error(err);
+        showError(message, 'Unexpected error occurred');
+        console.log(err);
     }
+}
+
+async function loadNavbar() {
+    const html = await fetch('./navbar.html').then(r => r.text());
+    document.getElementById('navbar-container').innerHTML = html;
+}
+
+function handleLogout() {
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    logoutBtn?.addEventListener('click', () => {
+        localStorage.removeItem('token');
+        window.location.href = 'index.html';
+    });
+}
+
+function renderDonut(donutData) {
+    new Chart(document.getElementById('donutChart'), {
+        type: 'doughnut',
+        data: {
+            labels: donutData.map(i => i.name),
+            datasets: [{
+                data: donutData.map(i => i.value),
+                backgroundColor: ['#4CAF50', '#F44336', '#FFC107', '#2196F3']
+            }]
+        }
+    });
+}
+
+function renderBar(barData) {
+    new Chart(document.getElementById('barChart'), {
+        type: 'bar',
+        data: {
+            labels: barData.map(i => i.name),
+            datasets: [{
+                label: 'Users',
+                data: barData.map(i => i.value),
+                backgroundColor: '#2196F3'
+            }]
+        }
+    });
+}
+
+function renderTable(users) {
+    const tbody = document.querySelector('#userTable tbody');
+    tbody.innerHTML = '';
+
+    let i = 1;
+
+    users.forEach(user => {
+        const row = document.createElement('tr');
+
+        row.innerHTML = `
+            <td>${i++}</td>
+            <td>${user.firstName}</td>
+            <td>${user.lastName}</td>
+            <td>${user.username}</td>
+        `;
+
+        tbody.appendChild(row);
+    });
+}
+
+function showError(element, message) {
+    element.innerText = message;
+    element.style.color = 'red';
 }
