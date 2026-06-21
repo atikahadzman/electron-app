@@ -3,34 +3,39 @@ const ctx = document.getElementById('myChart');
 // “When the dashboard page finishes loading, run the dashboard() function.”
 window.addEventListener('DOMContentLoaded', dashboard);
 
+/**
+ * 
+ * 1. try offline first
+ * 2. if no local data, fetch from API
+ * 3. render dashboard page
+ */
 async function dashboard() {
     await loadNavbar();
     handleLogout();
 
     const message = document.getElementById('message');
+    const token = localStorage.getItem('token');
 
-    try {
-        const token = localStorage.getItem('token');
-
-        if (!token) {
-            showError(message, 'No token found');
-            return;
-        }
-
-        const result = await window.auth.getDashboard(token);
-
+    let result;
+    result = await window.auth.getLocalDashboard();
+    if (!result.success) {
+        result = await window.auth.getDashboard(token);
+        console.log('==== result =====', result);
         if (result.success) {
-            renderDonut(result.data.chartDonut);
-            renderBar(result.data.chartBar);
-            renderTable(result.data.tableUsers);
-        } else {
-            showError(message, result.message);
+            await window.auth.saveDashboard(result.data);
         }
-
-    } catch (err) {
-        showError(message, 'Unexpected error occurred');
-        console.log(err);
     }
+
+    const data = result.data;
+
+    if (!data) {
+        showError(message, 'No dashboard data available');
+        return;
+    }
+
+    renderDonut(data.chartDonut);
+    renderBar(data.chartBar);
+    renderTable(data.tableUsers);
 }
 
 async function loadNavbar() {
@@ -40,10 +45,19 @@ async function loadNavbar() {
 
 function handleLogout() {
     const logoutBtn = document.getElementById('logoutBtn');
+    const email = process.env.USER_EMAIL_TEST;
 
-    logoutBtn?.addEventListener('click', () => {
-        localStorage.removeItem('token');
-        window.location.href = 'index.html';
+    logoutBtn?.addEventListener('click', async () => {
+        try {
+            localStorage.removeItem('token');
+            await window.auth.deleteUser(email);
+            await window.auth.deleteDashboard('dashboard');
+
+            window.location.href = 'index.html';
+
+        } catch (err) {
+            console.error('Logout error:', err);
+        }
     });
 }
 

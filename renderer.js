@@ -1,5 +1,9 @@
 window.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('loginBtn').addEventListener('click', login);
+    console.log('window.auth:', window.auth);
+
+    document
+        .getElementById('loginBtn')
+        .addEventListener('click', login);
 });
 
 async function login() {
@@ -7,11 +11,9 @@ async function login() {
     const password = document.getElementById('password').value;
     const message = document.getElementById('message');
     const result = await window.auth.validateLocalLogin(username, password);
-    console.log('validateLogin:', result);
-
+console.log('==== RESULT ===== ' +  JSON.stringify(result));
     if (result.success) {
-        console.log('HERE1324q24');
-        localStorage.setItem('token', 'offline');
+        localStorage.setItem('token', result.token);
 
         message.innerText = 'Login successful (offline)';
         message.style.color = 'green';

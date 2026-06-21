@@ -13,6 +13,9 @@ contextBridge.exposeInMainWorld('auth', {
     getDashboard: (token) =>
         ipcRenderer.invoke('get-dashboard', token),
 
+    getLocalDashboard: () =>
+        ipcRenderer.invoke('get-local-dashboard'),
+
     saveUser: (user) =>
         ipcRenderer.invoke('save-user', user),
 
@@ -20,5 +23,11 @@ contextBridge.exposeInMainWorld('auth', {
         ipcRenderer.invoke('get-user', username),
     
     validateLocalLogin: (username, password) =>
-        ipcRenderer.invoke('validate-local-login', username, password)
+        ipcRenderer.invoke('validate-local-login', username, password),
+
+    deleteUser: (id) =>
+        ipcRenderer.invoke('delete-user', id),
+
+    deleteDashboard: (id = 'dashboard') =>
+        ipcRenderer.invoke('delete-dashboard', id),
 });

@@ -44,10 +44,29 @@ ipcMain.handle('login', async (_, username, password) => {
             password
         });
 
+        await db.put({
+            _id: username,
+            username,
+            password,
+            token: res.data
+        }).catch(async (err) => {
+            if (err.status === 409) {
+                const existing = await db.get(username);
+
+                await db.put({
+                    ...existing,
+                    username,
+                    password,
+                    token: res.data
+                });
+            } else {
+                throw err;
+            }
+        });
+
         return {
             success: true,
-            token: res.data.token,
-            data: res.data
+            token: res.data
         };
 
     } catch (error) {
@@ -63,9 +82,11 @@ ipcMain.handle('validate-local-login', async (_, username, password) => {
         const user = await db.get(username).catch(() => null);
 
         if (user.password === password) {
+            const token = user.token;
+
             return {
                 success: true,
-                offline: true,
+                token: token,
                 user
             };
         }
@@ -76,7 +97,6 @@ ipcMain.handle('validate-local-login', async (_, username, password) => {
         };
 
     } catch (err) {
-        console.log('err: ' + JSON.stringify(err));
         return {
             success: false,
             message: 'User not found locally'
@@ -137,14 +157,94 @@ ipcMain.handle('get-dashboard', async (_, token) => {
             }
         );
 
+        const dashboardData = response.data;
+
+        // save into PouchDB
+        await db.put({
+            _id: 'dashboard',
+            ...dashboardData,
+            updatedAt: Date.now()
+        }).catch(async (err) => {
+
+            // if already exists, update it
+            if (err.status === 409) {
+                const existing = await db.get('dashboard');
+
+                await db.put({
+                    ...existing,
+                    ...dashboardData,
+                    updatedAt: Date.now()
+                });
+            } else {
+                throw err;
+            }
+        });
+
         return {
             success: true,
-            data: response.data
+            data: dashboardData
         };
     } catch (error) {
         return {
             success: false,
             message: error.message
+        };
+    }
+});
+
+ipcMain.handle('get-local-dashboard', async () => {
+    try {
+        const dashboard = await db.get('dashboard');
+
+        if (dashboard.success) {
+            return {
+                success: true,
+                data: dashboard,
+            };
+        }
+
+        return {
+            success: false,
+            data: 'No cached dashboard'
+        };
+
+    } catch (err) {
+        return {
+            success: false,
+            message: 'No cached dashboard',
+            data: 'No cached dashboard'
+        };
+    }
+});
+
+ipcMain.handle('delete-user', async (_event, username) => {
+    try {
+        const doc = await db.get(username);
+        await db.remove(doc);
+
+        return { success: true };
+
+    } catch (err) {
+        return {
+            success: false,
+            message: err.message
+        };
+    }
+});
+
+ipcMain.handle('delete-dashboard', async (_event, id = 'dashboard') => {
+    try {
+        const doc = await db.get(id);
+        await db.remove(doc);
+
+        return {
+            success: true
+        };
+
+    } catch (err) {
+        return {
+            success: false,
+            message: err.message
         };
     }
 });
