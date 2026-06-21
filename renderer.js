@@ -1,5 +1,4 @@
 window.addEventListener('DOMContentLoaded', () => {
-    console.log('window.auth:', window.auth);
 
     document
         .getElementById('loginBtn')
@@ -11,7 +10,7 @@ async function login() {
     const password = document.getElementById('password').value;
     const message = document.getElementById('message');
     const result = await window.auth.validateLocalLogin(username, password);
-console.log('==== RESULT ===== ' +  JSON.stringify(result));
+
     if (result.success) {
         localStorage.setItem('token', result.token);
 

@@ -20,7 +20,7 @@ async function dashboard() {
     result = await window.auth.getLocalDashboard();
     if (!result.success) {
         result = await window.auth.getDashboard(token);
-        console.log('==== result =====', result);
+  
         if (result.success) {
             await window.auth.saveDashboard(result.data);
         }
