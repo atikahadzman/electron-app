@@ -6,6 +6,10 @@ contextBridge.exposeInMainWorld('versions', {
     electron: () => process.versions.electron
 });
 
+contextBridge.exposeInMainWorld('config', {
+    userEmail: process.env.USER_EMAIL_TEST
+});
+
 contextBridge.exposeInMainWorld('auth', {
     login: (username, password) =>
         ipcRenderer.invoke('login', username, password),

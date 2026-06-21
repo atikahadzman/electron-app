@@ -45,7 +45,7 @@ async function loadNavbar() {
 
 function handleLogout() {
     const logoutBtn = document.getElementById('logoutBtn');
-    const email = process.env.USER_EMAIL_TEST;
+    const email = window.config.userEmail;
 
     logoutBtn?.addEventListener('click', async () => {
         try {
